@@ -12,17 +12,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      - uses: cavcrosby/pyenv-setup@v1.0.0
+      - uses: cavcrosby/setup-pyenv@v1.0.0
 
       - uses: actions/setup-python@v4
         with:
           python-version: "3.10"
 
-      - id: makefiles-setup
-        uses: cavcrosby/makefiles-setup@v1.0.0
+      - id: setup-makefiles
+        uses: cavcrosby/setup-makefiles@v1.0.0
 
       - name: Initialize project
-        run: make --include-dir "${{ steps.makefiles-setup.outputs.CAVCROSBY_MAKEFILES_PATH }}" setup  # yamllint disable-line rule:line-length
+        run: make --include-dir "${{ steps.setup-makefiles.outputs.CAVCROSBY_MAKEFILES_PATH }}" setup  # yamllint disable-line rule:line-length
 
       - name: Run tests
-        run: make --include-dir "${{ steps.makefiles-setup.outputs.CAVCROSBY_MAKEFILES_PATH }}" test  # yamllint disable-line rule:line-length
+        run: make --include-dir "${{ steps.setup-makefiles.outputs.CAVCROSBY_MAKEFILES_PATH }}" test  # yamllint disable-line rule:line-length
