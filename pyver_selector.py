@@ -5,10 +5,12 @@ import argparse
 import logging
 import logging.config
 import pathlib
+import re
 import subprocess
 import sys
 
 # Third Party Imports
+from poetry.core.semver.helpers import parse_constraint
 from poetry.core.semver.version import Version
 from poetry.core.version.exceptions import InvalidVersion
 from poetry.factory import Factory
@@ -20,6 +22,10 @@ _arg_parser = argparse.ArgumentParser(
     description=__doc__,
     allow_abbrev=False,
 )
+POETRY_PYTHON_CONSTRAINT_MAKEFILE_REGEX = (
+    r"(POETRY_PYTHON_CONSTRAINT\s=\s)(.+)"
+)
+POETRY_PYTHON_CONSTRAINT_MAKEFILE_VALUE_GROUP = 2
 
 # option labels
 VERBOSE_SHORT_OPTION = "v"
@@ -85,9 +91,26 @@ def pyver_selector(args):
     if args[VERBOSE_LONG_OPTION]:
         _logger.setLevel(logging.DEBUG)
 
+    try:
+        with open(pathlib.Path("./Makefile")) as makefile_target:
+            makefile_matches = re.search(
+                POETRY_PYTHON_CONSTRAINT_MAKEFILE_REGEX, makefile_target.read()
+            )
+    except FileNotFoundError:
+        pass
+    if pathlib.Path("./pyproject.toml").exists():
+        python_constraint = (
+            Factory()
+            .create_poetry(pathlib.Path("."))
+            .package.python_constraint
+        )
+    elif makefile_matches:
+        python_constraint = parse_constraint(
+            makefile_matches[POETRY_PYTHON_CONSTRAINT_MAKEFILE_VALUE_GROUP]
+        )
+
     # I should never, ever, use this hypothetical Python 1
     greatest_python_ver = Version.parse("1")
-    project_pkg = Factory().create_poetry(pathlib.Path(".")).package
     for python_ver in python_vers.stdout.split():
         try:
             parsed_python_ver = Version.parse(python_ver.strip())
@@ -97,8 +120,8 @@ def pyver_selector(args):
                 f"{parsed_python_ver.is_no_suffix_release()}"
             )
             _logger.debug(
-                "project_pkg.python_constraint.allows(parsed_python_ver): "
-                f"{project_pkg.python_constraint.allows(parsed_python_ver)}"
+                "python_constraint.allows(parsed_python_ver): "
+                f"{python_constraint.allows(parsed_python_ver)}"
             )
             _logger.debug(
                 "greatest_python_ver < parsed_python_ver: "
@@ -106,7 +129,7 @@ def pyver_selector(args):
             )
             if (
                 parsed_python_ver.is_no_suffix_release()
-                and project_pkg.python_constraint.allows(parsed_python_ver)
+                and python_constraint.allows(parsed_python_ver)
                 and greatest_python_ver < parsed_python_ver
             ):
                 greatest_python_ver = parsed_python_ver

@@ -30,6 +30,22 @@ class TestReturnExactVersion(unittest.TestCase):
         self.assertEqual(str(pyver_selector({"verbose": False})), "3.9.14")
 
 
+class TestReturnExactVersionMakefile(unittest.TestCase):
+    """Run test to return exact version based on Makefile constraint."""
+
+    def setUp(self):
+        """Set up environment before running test method(s)."""
+        os.chdir("./tests/return-exact-version-makefile")
+
+    def tearDown(self):
+        """Tear down environment after running test method(s)."""
+        os.chdir(RUNNING_WORKINGDIR)
+
+    def test_return_exact_version_makefile(self):
+        """Run test to return exact version based on Makefile constraint."""
+        self.assertEqual(str(pyver_selector({"verbose": False})), "3.10.7")
+
+
 class TestInvalidConstraint(unittest.TestCase):
     """Run test to throw exception for invalid python constraint."""
 
