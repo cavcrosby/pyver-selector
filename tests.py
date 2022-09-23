@@ -1,4 +1,4 @@
-"""Tests most Makefile targets."""
+"""Performs unit tests on the codebase."""
 # Standard Library Imports
 import os
 import sys
