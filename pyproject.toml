@@ -3,16 +3,9 @@ name = "pyver-selector"
 version = "1.0.0"
 description = "Tool to select a known pyenv CPython version based on a poetry's version constraint"
 requires-python = ">= 3.8, < 3.11"
-dependencies = [
-  "poetry >= 1.2.1, < 1.3.0"
-]
-
-[project.optional-dependencies]
-dev = [
-  "black >= 22.8.0, < 23.0.0",
-  "flake8 >= 5.0.4, < 6.0.0",
-  "flake8-docstrings >= 1.6.0, < 2.0.0",
-  "yamllint >= 1.26.3, < 2.0.0"
+dynamic = [
+  "dependencies",
+  "optional-dependencies"
 ]
 
 [[authors]]
@@ -24,3 +17,15 @@ file = "./LICENSE"
 
 [project.scripts]
 pyver_selector = "pyver_selector:main"
+
+[tool.setuptools.dynamic]
+dependencies = {file = ["requirements.txt"]}
+
+[tool.setuptools.dynamic.optional-dependencies]
+dev = {file = ["dev-requirements.txt"]}
+
+[build-system]
+requires = [
+  "setuptools >= 61.0.0",
+]
+build-backend = "setuptools.build_meta"
