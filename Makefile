@@ -23,7 +23,7 @@ ${HELP}:
 
 .PHONY: ${SETUP}
 ${SETUP}:
->	${PYTHON} -m pip install --editable ".[dev]"
+>	${PYTHON} -m pip install "setuptools>=61.0.0" --editable ".[dev]"
 
 .PHONY: ${LINT}
 ${LINT}: ${YAMLLINT}

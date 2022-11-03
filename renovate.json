@@ -6,5 +6,14 @@
     "timezone": "utc",
     "schedule": [
         "after 5:00 am before 11:00 am"
+    ],
+    "packageRules": [
+        {
+            "matchManagers": ["pip_setup"],
+            "matchUpdateTypes": ["minor", "patch"],
+            "automerge": true,
+            "automergeType": "branch",
+            "rebaseWhen": "behind-base-branch"
+        }
     ]
 }
