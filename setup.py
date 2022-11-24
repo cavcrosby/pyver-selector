@@ -18,7 +18,7 @@ setup(
     extras_require={
         "dev": [
             "black ==22.10.0",
-            "flake8 ==5.0.4",
+            "flake8 ==6.0.0",
             "flake8-docstrings ==1.6.0",
             "yamllint ==1.28.0",
         ],
